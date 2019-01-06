@@ -13,16 +13,16 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response, request_envelope, RequestEnvelope
 from ask_sdk_model.ui import SimpleCard
 from ask_sdk_s3_persistence import S3PersistenceAdapter
-from datetime import datetime
-
 from ask_sdk_s3_persistence.ObjectKeyGenerators import applicationId
+from datetime import datetime
 
 
 s3_client = boto3.client('s3')
-#object_generator = applicationId(request_envelope)
 path_prefix = 'test_prefix'
 
+
 ssb = StandardSkillBuilder(bucket_name='testpersistence', object_generator=applicationId, s3_client=s3_client, path_prefix=path_prefix)
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
