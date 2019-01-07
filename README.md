@@ -8,25 +8,27 @@ I thought it is a nice feature to have and decided to check the documentation of
 **Disclaimer: This is not officially supported. Use it at your own risk. The implementation can be improve, definitely. I wrote a very short proposal as a feature request in** [ASK SDK for Python Data Persistence in S3](https://github.com/alexa/alexa-skills-kit-sdk-for-python/issues/57). 
 
 # In this article you will find:
-- A description of the module ASK SDK S3 Persistence.
+- A description of the module S3 Persistence for the ASK SDK for Python.
 - Instructions to get this module working in your skill.
 - Further comments
 
 # Description of the module
 This module consists of 3 files. I like to think of it as a pluggable module as just copying and pasting the files in the right place will get you up and running quickly.
 
-This module uses ```Boto 3``` Python library. It already comes with the ASK SDK.
+This module uses ```Boto 3``` library. It already comes with the ASK SDK.
 
-I took some ideas from the SDK for NodeJS where this is already implemented and figure out how it works with the example German coded. For example the structure of the module was taken from both SDKs (for NodeJS and Python).
+The data is persisted as a JSON.
+
+I took some ideas from the SDK for NodeJS where this is already implemented and figured out how it works with the example German coded. For example, the structure of the module was taken from both SDKs (for NodeJS and Python).
 
 ## The persistence module
 It works like the current DynamoDB Persistence one. It consists in 2 files:
 - The adapter, which I called: ```S3PersistenceAdapter```
 - The object key generator, which I called ```ObjectKeyGenerators```
 
-If we check the DynamoDB one, you will notice it is the same:
+If we check the DynamoDB one, you will notice it is (mostly) the same:
 
-```
+```bash
 ✗ ls -1
 __init__.py
 __version__.py
@@ -39,16 +41,16 @@ I have placed both files in ```ask_sdk_s3_persistence``` directory.
 ### How ```S3PersistenceAdapter``` works
 First of all the class ```S3PersistenceAdapter``` derives from ```AbstractPersistenceAdapter``` like the DynamoDB one. 
 
-The constructor in this case, unlike the DynamoDB one, takes different parameters
+The constructor in this case, unlike the DynamoDB one, takes different parameters:
 
-```
+```python
     def __init__(self, bucket_name, object_generator, 
                  s3_client=boto3.client('s3'), path_prefix=None):
 ```
 
-```bucket_name```: is the name of the bucket were you will store the json file that contains the data you want to persist. This bucket has to be created beforehand and all the right permissions to your execution role and your Lambda function to access S3.
+```bucket_name```: is the name of the bucket were you will store the json file that contains the data you want to persist. This bucket has to be created beforehand as well as all the right permissions to your execution role and your Lambda function to access S3.
 
-```object_generator```: This is used to distinguish later on each to whom the data belongs to. The file that is created to store the data uses the information obtained from this generator. More on this further in the article.
+```object_generator```: This is used to distinguish later on each to whom the data belongs to. The file that is created to store the data uses the information obtained from this generator. More on this later in the article.
 
 ```s3_client```: In this case is straight forward, S3 Client.
 
@@ -57,26 +59,25 @@ The constructor in this case, unlike the DynamoDB one, takes different parameter
 Deriving from ```AbrstractPersistenceAdapter``` means that we have to implement 2 methods that will support the basic ```get``` and ```set``` features: 
 
 #### ```get_attributes(self, request_envelope)```
-This method takes the ```request_envelope``` and the ```path_prefix``` to generate an ```objectId``` which is basically the path and the name of the file joined. Then it tries to get that object from S3 using the ```get_object``` method. If it is not possible then it will create a new one with the creating timestamp in a tag called ```created```. Then it returns the object in any case. 
+This method takes the ```request_envelope``` as parameter. A call to the `object_generator` function passing that ```request_envelope``` will return an ```id``` that joined with the ```path_prefix``` will be used to create an ```objectId``` which is basically the location and the name of the file where the data will be stored. Then it tries to get that object from S3 using the ```get_object``` method. If it is not possible then it will create a new one with the creating timestamp in a tag called ```created```. Then it returns the object in any case. 
 
-I did it in that way because if the object was not there it might that it is the first time the skill is being used for example, so yo avoid error I create one.
 
 #### ```save_attributes(self, request_envelope, attributes)```
-This method takes the ```request_envelope``` and the ```attributes``` to be stores. Like the ```get_attributes``` method it, first, creates the ```objectId```. Then take the attributes dictionary and converts it to bytes and finally creates the object in S3 using ```put_object```.
+This method takes the ```request_envelope``` and the ```attributes``` to be stored. Like the ```get_attributes``` method it, first, creates the ```objectId```. Then takes the attributes dictionary and converts it to bytes and finally creates the object in S3 using ```put_object```.
 
 In both methods some exceptions and errors are handled.
 
 ### How ```ObjectKeyGenerators``` works
 This is basically a set of functions that extract the ```user_id```, ```device_id``` or ```application_id``` from the request envelope.
 
-Is it really needed?, probably not, however it keeps the code organised and easier to maintain. 
+Is it really needed?, probably not, however it keeps the code organised and easy to maintain. 
 
 As an additional comment: the example from German includes a function to extract the ```application_id```, I wonder why it is not included in the ```ObjectKeyGenerators``` from NodeJS’ SDK. Seems like a nice proposal.
 
 ## New ```standard_s3.py```
-The SDK comes with a class called ```StandardSkillBuilder``` that lives in ```standard.py```. It derives from ```SkillBuilder```. Thinking of this I wanted that my module was kind of pluggable so that is why this class exists. It also derives from ```SkillBuilder``` so it requires a ```skill_configuration``` that is created based on the parameters the constructor receives. It takes basically the same parameters as the S3 Persistence Adapter, as follows:
+The SDK comes with a class called ```StandardSkillBuilder``` that lives in ```standard.py```. It derives from ```SkillBuilder```. After thinking a bit about this, I wanted the S3 Persistence module to be, kind of, pluggable so that is why this I decided to create ```standard_s3.py```. It also derives from ```SkillBuilder``` so it requires a ```skill_configuration``` that is created based on the parameters the constructor receives. It takes basically the same parameters as the S3 Persistence Adapter, as follows:
 
-```
+```python
     def __init__(self, bucket_name=None, s3_client=None,
                  object_generator=None, path_prefix=None):
 ```
@@ -92,12 +93,12 @@ The SDK comes with a class called ```StandardSkillBuilder``` that lives in ```st
 
 2. In your main skill file (or lambda) add this:
 
-```
+```python
 from ask_sdk.standard_s3 import StandardSkillBuilder
 from ask_sdk_s3_persistence.ObjectKeyGenerators import applicationId
 ```
 
-*Note: When it comes to the ```ObjectKeyGenerators``` use any of the available, that is up to you, remember that it will be the name of the file where the data will be stored. I have used ```applicationId``` to be consistent with the sample app written by German.*
+*Note: When it comes to the ```ObjectKeyGenerators``` use any of the available, that is up to you, remember that it will be the name of the file where the data will be stored. I have used ```applicationId``` to be consistent with the sample skill written by German.*
 
 3. Also add this:
 
@@ -105,7 +106,7 @@ from ask_sdk_s3_persistence.ObjectKeyGenerators import applicationId
 s3_client = boto3.client('s3') # a
 path_prefix = 'test_prefix' # b
 
-ssb = StandardSkillBuilder(bucket_name='testpersistence', object_generator=applicationId, s3_client=s3_client, path_prefix=path_prefix) # c
+ssb = StandardSkillBuilder(bucket_name='<bucket_name>', object_generator=applicationId, s3_client=s3_client, path_prefix=path_prefix) # c
 ```
 
 a) Is the S3 Client. I know, self-explanatory.
