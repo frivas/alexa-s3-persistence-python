@@ -1,0 +1,48 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "global persistence demo",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "GetAttributeIntent",
+          "slots": [
+            {
+              "name": "key",
+              "type": "AMAZON.FOUR_DIGIT_NUMBER"
+            },
+            {
+              "name": "value",
+              "type": "AMAZON.Country"
+            }
+          ],
+          "samples": [
+            "assign {value} to {key}",
+            "match {key} with {value}",
+            "{key} equals {value}",
+            "set {value} for {key}",
+            "pair {key} {value}",
+            "key {key} value {value}",
+            "for {key} set {value}"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        }
+      ],
+      "types": []
+    }
+  }
+}
