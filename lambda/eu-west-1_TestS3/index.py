@@ -4,6 +4,7 @@ import logging
 import boto3
 import six
 
+from data import data
 
 from ask_sdk.standard_s3 import StandardSkillBuilder
 from ask_sdk_core.dispatch_components import (AbstractRequestHandler, AbstractExceptionHandler, AbstractRequestInterceptor, AbstractResponseInterceptor)
@@ -13,16 +14,16 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response, request_envelope, RequestEnvelope
 from ask_sdk_model.ui import SimpleCard
 from ask_sdk_s3_persistence import S3PersistenceAdapter
-from datetime import datetime
-
 from ask_sdk_s3_persistence.ObjectKeyGenerators import applicationId
+from datetime import datetime
 
 
 s3_client = boto3.client('s3')
-#object_generator = applicationId(request_envelope)
 path_prefix = 'test_prefix'
+bucket_name = data.BUCKET_NAME
 
-ssb = StandardSkillBuilder(bucket_name='testpersistence', object_generator=applicationId, s3_client=s3_client, path_prefix=path_prefix)
+
+ssb = StandardSkillBuilder(bucket_name=bucket_name, object_generator=applicationId, s3_client=s3_client, path_prefix=path_prefix)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -62,7 +63,7 @@ class GetAttributeIntentHandler(AbstractRequestHandler):
             attributes = handler_input.attributes_manager.session_attributes
             attributes[key] = value
             handler_input.attributes_manager.session_attributes = attributes
-            speechText = 'Key value pair <say-as interpret-as="digits">' + key + '</say-as> ' + value + ' registered! Will be saved on exit';
+            speechText = 'Key value pair <say-as interpret-as="digits">' + key + '</say-as> ' + value + ' registered! Will be saved on exit'
 
         handler_input.response_builder.speak(speechText).set_card(SimpleCard("Get Attributes Intent", speechText)).ask(speechText).set_should_end_session(False)
 
@@ -120,14 +121,14 @@ class AllExceptionHandler(AbstractExceptionHandler):
 
 class RequestLogger(AbstractRequestInterceptor):
     def process(self, handler_input):
-        #logger.debug(f'Alexa Request: {handler_input.request_envelope.request}')
+        # logger.debug(f'Alexa Request: {handler_input.request_envelope.request}')
         logger.info(f'Alexa Request: {handler_input.request_envelope.request}')
 
 
 class ResponseLogger(AbstractResponseInterceptor):
     def process(self, handler_input, response):
         # type: (HandlerInput, Response) -> None
-        #logger.debug(f'Alexa Response: {response}')
+        # logger.debug(f'Alexa Response: {response}')
         logger.info(f'Alexa Response: {response}')
 
 
@@ -151,7 +152,7 @@ class LoadPersistenceAttributesRequestInterceptor(AbstractRequestInterceptor):
         logger.info(f'LOAD ATTRS: {attributes}')
 
         if len(attributes) == 0:
-            # First time skill user
+            # First time skill use
             attributes['loadedAtTimestamp'] = 'LOAD'
             attributes['launchCount'] = 0
         else:
