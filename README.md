@@ -5,7 +5,7 @@ A few days ago I came to know, through [German Viscuso’s](https://twitter.com/
 
 I thought it is a nice feature to have and decided to check the documentation of ASK SDK for Python and did not found something similar to what German showed. I thought of giving it a try and in this short article I am going to describe how a possible implementation of this feature can be done using, or reusing I should day, already existent SDK features.
 
-**Disclaimer: This is not officially supported. Use it at your own risk. The implementation is probably not the best. I wrote a very short proposal as a feature request in** [ASK SDK for Python Data Persistence in S3](https://github.com/alexa/alexa-skills-kit-sdk-for-python/issues/57). 
+**Disclaimer: This is not officially supported. Use it at your own risk. The implementation can be improve, definitely. I wrote a very short proposal as a feature request in** [ASK SDK for Python Data Persistence in S3](https://github.com/alexa/alexa-skills-kit-sdk-for-python/issues/57). 
 
 # In this article you will find:
 - A description of the module ASK SDK S3 Persistence.
