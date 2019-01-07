@@ -126,4 +126,4 @@ c) Create a new ```StandardSkillBuilder``` passing the name of the bucket, the o
 - An improvement on the ```get_attributes``` method that avoids storing dummy data can be very nice.
 - Include tests.
 - Posted an official proposal in the [User Voice portal](https://alexa.uservoice.com/forums/906892-alexa-skills-developer-voice-and-vote/suggestions/36464686-add-s3-persistence-support-to-ask-sdk-for-python). Let’s see if people consider it useful. 
-- Be aware that even though the SDK for NodeJS supports S3 data persistence officially they suggest using DynamoDB for a better experience. Check the note [here](https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs/tree/2.0.x/ask-sdk-s3-persistence-adapter#note).
+- Be aware that even though the SDK for NodeJS supports S3 data persistence officially they suggest using DynamoDB for a better experience. Check the note [here](https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs/tree/2.0.x/ask-sdk-s3-persistence-adapter#note). Thanks [@nikhilym](https://github.com/nikhilym) for pointing this out.
