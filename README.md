@@ -109,8 +109,10 @@ path_prefix = 'test_prefix' # b
 ssb = StandardSkillBuilder(bucket_name='<bucket_name>', object_generator=applicationId, s3_client=s3_client, path_prefix=path_prefix) # c
 ```
 
-a) Is the S3 Client. I know, self-explanatory.
+a) Is the S3 Client. I know, self-explanatory. :)
+
 b) In case you have some folder structure in your bucket, otherwise leave it empty.
+
 c) Create a new ```StandardSkillBuilder``` passing the name of the bucket, the object key generator, the client and path prefix (if used) to it.
 
 4. As you may notice in the sample skill file [index.py](https://github.com/frivas/alexa-s3-persistence-python/blob/master/lambda/eu-west-1_TestS3/index.py) I have included 2 interceptors (quest and response) that will take care of loading and saving the data based on  those events. When ```Response``` one saves the data and when ```Request``` another loads it. Both can be modified as per your particular needs. This is just a sample.
