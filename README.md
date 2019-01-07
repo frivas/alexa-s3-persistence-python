@@ -1,7 +1,7 @@
 # S3 Data Persistence for ASK SDK for Python (v1.5.0)
 
 # Some background
-A few days ago I came to know, through German Viscuso’s twit, that the ASK SDK for NodeJS supports data persistence in S3. It is not supported by ASK SDK for Python yet. 
+A few days ago I came to know, through [German Viscuso’s](https://twitter.com/germanviscuso) [tweet](https://twitter.com/germanviscuso/status/1081198187954794496), that the ASK SDK for NodeJS supports data persistence in S3. It is not supported by ASK SDK for Python yet. 
 
 I thought it is a nice feature to have and decided to check the documentation of ASK SDK for Python and did not found something similar to what German showed. I thought of giving it a try and in this short article I am going to describe how a possible implementation of this feature can be done using, or reusing I should day, already existent SDK features.
 
